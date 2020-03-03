@@ -41,14 +41,17 @@ object Extraction extends ExtractionInterface {
       case Stations(_, _, _, None) => false
       case _ => true
     }
-    stations.cache()
+//    stations.cache()
     println("stations.getNumPartitions: " + stations.getNumPartitions)
+    println("stations.getNumPartitions: " + stations.count())
     /*Stations(007005,None,None,None)*/
     /*007070,,09,25,87.8*/
 //    val temperatures =  sc.textFile(filePath(temperaturesFile)).map(Temperatures.parse)
     val temperatures =  getRDDFromResource(temperaturesFile).map(Temperatures.parse)
-    temperatures.cache()
+//    temperatures.cache()
+    temperatures.repartition(200)
     println("temperatures.getNumPartitions: " + temperatures.getNumPartitions)
+    println("temperatures.getNumPartitions: " + temperatures.count)
 //    println("temperatures: " + temperatures.count() + ", " + temperatures.first())
 
     def extractLocateTemps(stationsList: Iterable[Stations], tempList: Iterable[Temperatures]) : Iterable[(LocalDate, Location, Double)] =
