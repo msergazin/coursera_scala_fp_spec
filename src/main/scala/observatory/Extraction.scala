@@ -41,12 +41,13 @@ object Extraction extends ExtractionInterface {
       case Stations(_, _, _, None) => false
       case _ => true
     }
+    stations.cache()
     println("stations.getNumPartitions: " + stations.getNumPartitions)
     /*Stations(007005,None,None,None)*/
-//    println("stations: " + stations.count() + ", " + stations.first())
     /*007070,,09,25,87.8*/
 //    val temperatures =  sc.textFile(filePath(temperaturesFile)).map(Temperatures.parse)
     val temperatures =  getRDDFromResource(temperaturesFile).map(Temperatures.parse)
+    temperatures.cache()
     println("temperatures.getNumPartitions: " + temperatures.getNumPartitions)
 //    println("temperatures: " + temperatures.count() + ", " + temperatures.first())
 
