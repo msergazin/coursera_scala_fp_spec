@@ -1,12 +1,11 @@
 package observatory
 
-import java.io.File
 import java.time.LocalDate
 
 import observatory.domains.{Stations, Temperatures}
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.io.Source
 
@@ -26,8 +25,6 @@ object Extraction extends ExtractionInterface {
     val fileStream = Source.getClass.getResourceAsStream(resource)
     sc.makeRDD(Source.fromInputStream(fileStream).getLines().toList)
   }
-  private def filePath(path: String) =
-    new File(this.getClass.getClassLoader.getResource("." + path).toURI).getPath
 
   /**
     * @param year             Year number
@@ -41,7 +38,7 @@ object Extraction extends ExtractionInterface {
       case Stations(_, _, _, None) => false
       case _ => true
     }
-//    stations.cache()
+    stations.cache()
     println("stations.getNumPartitions: " + stations.getNumPartitions)
     println("stations.getNumPartitions: " + stations.count())
     /*Stations(007005,None,None,None)*/
