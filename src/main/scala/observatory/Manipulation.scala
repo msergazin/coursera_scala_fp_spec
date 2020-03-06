@@ -22,10 +22,7 @@ object Manipulation extends ManipulationInterface {
           )
       }.toMap
 
-    gridLocation => {
-//      println(gridLocation.l)
-      grid(Location(gridLocation.lat, gridLocation.lon))
-    }
+    gridLocation => grid(Location(gridLocation.lat, gridLocation.lon))
   }
 
   /**

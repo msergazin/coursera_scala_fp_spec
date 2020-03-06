@@ -6,7 +6,9 @@ import com.sksamuel.scrimage.{Image, Pixel}
   * 5th milestone: value-added information visualization
   */
 object Visualization2 extends Visualization2Interface {
-
+  val width = 256
+  val height = 256
+  val alpha = 256
   /**
     * @param point (x, y) coordinates of a point in the grid cell
     * @param d00 Top-left value
@@ -23,7 +25,10 @@ object Visualization2 extends Visualization2Interface {
     d10: Temperature,
     d11: Temperature
   ): Temperature = {
-    ???
+    d00 * (1 - point.x) * (1 - point.y) +
+    d10 * point.x * (1 - point.y) +
+    d01 * (1 - point.x) * point.y  +
+    d11 * point.x * point.y
   }
 
   /**
@@ -37,7 +42,33 @@ object Visualization2 extends Visualization2Interface {
     colors: Iterable[(Temperature, Color)],
     tile: Tile
   ): Image = {
-    ???
+    val offX = tile.x * 256
+    val offY = tile.y * 256
+    val coords = for {
+      i <- 0 until height
+      j <- 0 until width
+    } yield (i, j)
+
+    val pixels = coords.par
+      .map({case (y, x) => Tile(x + offX, y + offY, 8 + tile.zoom)})
+      .map(Interaction.tileLocation)
+      .map(interpolate(grid, _))
+      .map(Visualization.interpolateColor(colors, _))
+      .map(col => Pixel(col.red, col.green, col.blue, alpha))
+      .toArray
+
+    Image(width, height, pixels)
+  }
+  def interpolate(grid: GridLocation => Temperature,
+                  loc: Location): Temperature = {
+    val lat = loc.lat.toInt
+    val lon = loc.lon.toInt
+    val d00 = GridLocation(lat, lon)
+    val d01 = GridLocation(lat + 1, lon)
+    val d10 = GridLocation(lat, lon + 1)
+    val d11 = GridLocation(lat + 1, lon + 1)
+    val point = CellPoint(loc.lon - lon, loc.lat - lat)
+    bilinearInterpolation(point, grid(d00), grid(d01), grid(d10), grid(d11))
   }
 
 }
